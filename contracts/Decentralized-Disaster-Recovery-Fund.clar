@@ -95,7 +95,7 @@
         (if ver
           (err ERR-ALREADY-CLAIMED)
           (begin
-            (map-set claims { claim-id: claim-id } { reporter: rep, amount: amt, is-verified: approve, is-paid: (and approve paid) })
+            (map-set claims { claim-id: claim-id } (tuple (reporter (get reporter claim)) (amount (get amount claim)) (is-verified approve) (is-paid (and approve (get is-paid claim)))))
             (if (not approve)
               (ok true)
               (match (map-get? fund-status { key: u0 }) fund
@@ -103,7 +103,7 @@
                   (err ERR-NO-FUNDS)
                   (begin
                     (map-set fund-status { key: u0 } { total-funds: (- (get total-funds fund) amt), is-active: (get is-active fund), creator: (get creator fund) })
-                    (map-set claims { claim-id: claim-id } { reporter: rep, amount: amt, is-verified: true, is-paid: true })
+                            (map-set claims { claim-id: claim-id } (tuple (reporter (get reporter claim)) (amount (get amount claim)) (is-verified true) (is-paid true)))
                     (ok true)
                   )
                 )
